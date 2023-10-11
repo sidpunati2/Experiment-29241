@@ -1,0 +1,6 @@
+*.fasta
+*.tsv
+
+# MacOS files
+._*
+.DS_Store
