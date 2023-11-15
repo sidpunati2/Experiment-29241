@@ -1,5 +1,6 @@
 *.fasta
 *.tsv
+scratch*
 
 # MacOS files
 ._*
