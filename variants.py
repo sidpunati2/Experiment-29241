@@ -8,6 +8,7 @@ Usage:
 """
 
 import re
+import argparse
 import pandas as pd
 from typing import cast, List
 from dataclasses import dataclass
@@ -51,6 +52,28 @@ def process_mutation_cell(s: str, b: bool = True) -> List[AASubstitution]:
 
     return substitutions
 
+def parse_cmd_line_args():
+    parser =  argparse.ArgumentParser()
+    parser.add_argument(
+        '--input_file', 
+        '-i',
+        type = str,
+        required = True,
+        help = 'File to read from.'
+    )
+    
+    parser.add_argument(
+        '--output_file', 
+        '-o',
+        type = str,
+        required = True,
+        help = 'File to read to.'
+    )
+    args = parser.parse_args()
+    return args.input_file,  args.output_file
+
+
+
 def main() -> None:
     """
         Assembles a dataframe highlighting highest locations of mutations
@@ -62,8 +85,10 @@ def main() -> None:
     Returns:
         None
     """
-        
-    original = pd.read_csv('africa_high_distance_candidates.tsv', delimiter = '\t', na_values=["", "()", "NA", "unknown"])
+    
+    input_file, output_file = parse_cmd_line_args()
+
+    original = pd.read_csv(input_file, delimiter = '\t', na_values=["", "()", "NA", "unknown"])
 
     mutations = original[['AA Substitutions']]
     mutations = mutations['AA Substitutions'].apply(process_mutation_cell)
@@ -74,7 +99,7 @@ def main() -> None:
     mutations = mutations.groupby(['Name', 'Protein',  'Reference', 'Codon', 'Mutation']).size().reset_index(name = 'Count')
     mutations = mutations.sort_values(by = ['Count'], ascending = False)
 
-    mutations.to_excel('cleaned.xlsx', index  = False)
+    mutations.to_excel(output_file, index  = False)
     print(mutations)
 
 
